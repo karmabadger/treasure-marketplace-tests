@@ -2,13 +2,12 @@
 pragma solidity ^0.8.2;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract FakeNFT is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
+contract FakeNFT is ERC721, Pausable, Ownable, ERC721Burnable {
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIdCounter;
@@ -16,7 +15,7 @@ contract FakeNFT is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable 
     constructor() ERC721("FakeNFT", "FAKENFT") {}
 
     function _baseURI() internal pure override returns (string memory) {
-        return "https://treasure-marketplace.mypinata.cloud/ipfs/QmZg7bqH36fnKUcmKDhqGm65j5hbFeDZcogoxxiFMLeybE";
+        return "https://treasure-marketplace.mypinata.cloud/ipfs/QmZg7bqH36fnKUcmKDhqGm65j5hbFeDZcogoxxiFMLeybE/1";
     }
 
     function pause() public onlyOwner {
@@ -27,11 +26,10 @@ contract FakeNFT is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable 
         _unpause();
     }
 
-    function safeMint(address to, string memory uri) public onlyOwner {
+    function safeMint(address to) public onlyOwner {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
-        _setTokenURI(tokenId, uri);
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 tokenId)
@@ -40,20 +38,5 @@ contract FakeNFT is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable 
         override
     {
         super._beforeTokenTransfer(from, to, tokenId);
-    }
-
-    // The following functions are overrides required by Solidity.
-
-    function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
-        super._burn(tokenId);
-    }
-
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        override(ERC721, ERC721URIStorage)
-        returns (string memory)
-    {
-        return super.tokenURI(tokenId);
     }
 }
